@@ -1,0 +1,112 @@
+package exercicio05;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+class TurmaControllerTest {
+
+    @Test
+    void testCodigoDisciplinaInvalido(){
+        TurmaDAO turmaDAOMock = mock(TurmaDAO.class);
+        VerificadorDeCodigos verificadorDeCodigosMock = mock(VerificadorDeCodigos.class);
+        Turma turmaMock = mock(Turma.class);
+
+        TurmaController turmaController = new TurmaController(turmaDAOMock);
+        turmaController.setVerificador(verificadorDeCodigosMock);
+
+        when(turmaMock.getCodDisciplina()).thenReturn("1");
+        when(verificadorDeCodigosMock.verificarCodigoDisciplina("1")).thenReturn(false);
+
+        var res = turmaController.cadastrarTurma(turmaMock);
+        assertEquals("codigo disciplina invalido", res);
+    }
+
+    @Test
+    void testCodigoTurmaInvalido(){
+        TurmaDAO turmaDAOMock = mock(TurmaDAO.class);
+        VerificadorDeCodigos verificadorDeCodigosMock = mock(VerificadorDeCodigos.class);
+        Turma turmaMock = mock(Turma.class);
+
+        TurmaController turmaController = new TurmaController(turmaDAOMock);
+        turmaController.setVerificador(verificadorDeCodigosMock);
+
+        when(turmaMock.getCodDisciplina()).thenReturn("1");
+        when(verificadorDeCodigosMock.verificarCodigoDisciplina("1")).thenReturn(true);
+
+        when(turmaMock.getCodTurma()).thenReturn("123");
+        when(verificadorDeCodigosMock.verificarCodigoTurma("123")).thenReturn(false);
+
+        var res = turmaController.cadastrarTurma(turmaMock);
+        assertEquals("codigo turma invalido", res);
+    }
+
+    @Test
+    void testTurmaJaExistente(){
+        TurmaDAO turmaDAOMock = mock(TurmaDAO.class);
+        VerificadorDeCodigos verificadorDeCodigosMock = mock(VerificadorDeCodigos.class);
+        Turma turmaMock = mock(Turma.class);
+
+        TurmaController turmaController = new TurmaController(turmaDAOMock);
+        turmaController.setVerificador(verificadorDeCodigosMock);
+
+        when(turmaMock.getCodDisciplina()).thenReturn("1");
+        when(verificadorDeCodigosMock.verificarCodigoDisciplina("1")).thenReturn(true);
+
+        when(turmaMock.getCodTurma()).thenReturn("123");
+        when(verificadorDeCodigosMock.verificarCodigoTurma("123")).thenReturn(true);
+
+        when(turmaDAOMock.existe(turmaMock)).thenReturn(true);
+
+        var res = turmaController.cadastrarTurma(turmaMock);
+        assertEquals("turma ja existe", res);
+    }
+
+    @Test
+    void testCadastroDeTurmaComSucesso(){
+        TurmaDAO turmaDAOMock = mock(TurmaDAO.class);
+        VerificadorDeCodigos verificadorDeCodigosMock = mock(VerificadorDeCodigos.class);
+        Turma turmaMock = mock(Turma.class);
+
+        TurmaController turmaController = new TurmaController(turmaDAOMock);
+        turmaController.setVerificador(verificadorDeCodigosMock);
+
+        when(turmaMock.getCodDisciplina()).thenReturn("1");
+        when(verificadorDeCodigosMock.verificarCodigoDisciplina("1")).thenReturn(true);
+
+        when(turmaMock.getCodTurma()).thenReturn("123");
+        when(verificadorDeCodigosMock.verificarCodigoTurma("123")).thenReturn(true);
+
+        when(turmaDAOMock.existe(turmaMock)).thenReturn(false);
+
+        when(turmaDAOMock.salvar(turmaMock)).thenReturn(true);
+
+        var res = turmaController.cadastrarTurma(turmaMock);
+        assertEquals("turma salva com sucesso", res);
+    }
+
+    @Test
+    void testFalhaNoCadastroDeTurma(){
+        TurmaDAO turmaDAOMock = mock(TurmaDAO.class);
+        VerificadorDeCodigos verificadorDeCodigosMock = mock(VerificadorDeCodigos.class);
+        Turma turmaMock = mock(Turma.class);
+
+        TurmaController turmaController = new TurmaController(turmaDAOMock);
+        turmaController.setVerificador(verificadorDeCodigosMock);
+
+        when(turmaMock.getCodDisciplina()).thenReturn("1");
+        when(verificadorDeCodigosMock.verificarCodigoDisciplina("1")).thenReturn(true);
+
+        when(turmaMock.getCodTurma()).thenReturn("123");
+        when(verificadorDeCodigosMock.verificarCodigoTurma("123")).thenReturn(true);
+
+        when(turmaDAOMock.existe(turmaMock)).thenReturn(false);
+
+        when(turmaDAOMock.salvar(turmaMock)).thenReturn(false);
+
+        var res = turmaController.cadastrarTurma(turmaMock);
+        assertEquals("turma nao salva. Erro no BD", res);
+    }
+}
