@@ -1,0 +1,139 @@
+package exercicio07;
+
+import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+class EmissarioTest {
+
+    @Test
+    void testListaDeDestinatariosVazia(){
+        UsuarioDAO usuarioDAOMock = mock(UsuarioDAO.class);
+        ServidorDeEmail servidorDeEmailMock = mock(ServidorDeEmail.class);
+        Emissario emissario = new Emissario(usuarioDAOMock, servidorDeEmailMock);
+
+        var resultado = emissario.enviarPara(null);
+        assertEquals("nomes nao informados", resultado);
+    }
+
+    @Test
+    void testListaSemDestinatarios(){
+        UsuarioDAO usuarioDAOMock = mock(UsuarioDAO.class);
+        ServidorDeEmail servidorDeEmailMock = mock(ServidorDeEmail.class);
+        Emissario emissario = new Emissario(usuarioDAOMock, servidorDeEmailMock);
+
+        var listaDeNomes = new ArrayList<String>();
+        var resultado = emissario.enviarPara(listaDeNomes);
+        assertEquals("nomes nao informados", resultado);
+    }
+
+    @Test
+    void testNaoEncontrarUsuarios(){
+        UsuarioDAO usuarioDAOMock = mock(UsuarioDAO.class);
+        ServidorDeEmail servidorDeEmailMock = mock(ServidorDeEmail.class);
+        Emissario emissario = new Emissario(usuarioDAOMock, servidorDeEmailMock);
+
+        var listaDeNomes = new ArrayList<String>();
+        listaDeNomes.add("Adriano");
+
+        when(usuarioDAOMock.getAllUsuarios()).thenReturn(null);
+
+        var resultado = emissario.enviarPara(listaDeNomes);
+        assertEquals("nao ha usuarios", resultado);
+    }
+
+    @Test
+    void testUsuariosSemRegistros(){
+        UsuarioDAO usuarioDAOMock = mock(UsuarioDAO.class);
+        ServidorDeEmail servidorDeEmailMock = mock(ServidorDeEmail.class);
+        Emissario emissario = new Emissario(usuarioDAOMock, servidorDeEmailMock);
+
+        var listaDeNomes = new ArrayList<String>();
+        listaDeNomes.add("Adriano");
+
+        var usuariosMock = new ArrayList<Usuario>();
+
+        when(usuarioDAOMock.getAllUsuarios()).thenReturn(usuariosMock);
+
+        var resultado = emissario.enviarPara(listaDeNomes);
+        assertEquals("nao ha usuarios", resultado);
+    }
+
+    @Test
+    void testEnvioComSucesso(){
+        UsuarioDAO usuarioDAOMock = mock(UsuarioDAO.class);
+        Criptografia criptografiaMock = mock(Criptografia.class);
+        ServidorDeEmail servidorDeEmailMock = mock(ServidorDeEmail.class);
+        Emissario emissario = new Emissario(usuarioDAOMock, servidorDeEmailMock);
+        emissario.setCriptografia(criptografiaMock);
+
+        var listaDeNomes = new ArrayList<String>();
+        listaDeNomes.add("Adriano");
+        listaDeNomes.add("Laura");
+
+        var usuariosMock = new ArrayList<Usuario>();
+        var usuarioMock = mock(Usuario.class);
+        usuariosMock.add(usuarioMock);
+
+        when(usuarioMock.getNome()).thenReturn("Adriano");
+        when(usuarioMock.getEmail()).thenReturn("adriano");
+
+        when(usuarioDAOMock.getAllUsuarios()).thenReturn(usuariosMock);
+        when(servidorDeEmailMock.enviar("TO: " + usuarioMock.getEmail() + " " + criptografiaMock.criptografar("mensagem secreta"))).thenReturn(true);
+
+        var resultado = emissario.enviarPara(listaDeNomes);
+        assertEquals("mensagens enviadas", resultado);
+    }
+
+    @Test
+    void testFalhaNoServidorDeEmail(){
+        UsuarioDAO usuarioDAOMock = mock(UsuarioDAO.class);
+        ServidorDeEmail servidorDeEmailMock = mock(ServidorDeEmail.class);
+        Criptografia criptografiaMock = mock(Criptografia.class);
+        Emissario emissario = new Emissario(usuarioDAOMock, servidorDeEmailMock);
+        emissario.setCriptografia(criptografiaMock);
+
+        var listaDeNomes = new ArrayList<String>();
+        listaDeNomes.add("Adriano");
+
+        var usuariosMock = new ArrayList<Usuario>();
+        var usuarioMock = mock(Usuario.class);
+        usuariosMock.add(usuarioMock);
+
+        when(usuarioMock.getNome()).thenReturn("Adriano");
+        when(usuarioMock.getEmail()).thenReturn("adriano");
+
+        when(usuarioDAOMock.getAllUsuarios()).thenReturn(usuariosMock);
+        when(criptografiaMock.criptografar("mensagem secreta")).thenReturn("mensagem criptografada");
+        when(servidorDeEmailMock.enviar("TO: " + usuarioMock.getEmail() + " " + "mensagem criptografada")).thenReturn(false);
+
+        var resultado = emissario.enviarPara(listaDeNomes);
+        assertEquals("servidor de email offline", resultado);
+    }
+
+    @Test
+    void testUsuarioNaoEncontrado(){
+        UsuarioDAO usuarioDAOMock = mock(UsuarioDAO.class);
+        ServidorDeEmail servidorDeEmailMock = mock(ServidorDeEmail.class);
+        Emissario emissario = new Emissario(usuarioDAOMock, servidorDeEmailMock);
+
+        var listaDeNomes = new ArrayList<String>();
+        listaDeNomes.add("Laura");
+
+        var usuariosMock = new ArrayList<Usuario>();
+        var usuarioMock = mock(Usuario.class);
+        usuariosMock.add(usuarioMock);
+
+        when(usuarioMock.getNome()).thenReturn("Adriano");
+        when(usuarioMock.getEmail()).thenReturn("adriano");
+
+        when(usuarioDAOMock.getAllUsuarios()).thenReturn(usuariosMock);
+
+        var resultado = emissario.enviarPara(listaDeNomes);
+        assertEquals("usuarios nao encontrados", resultado);
+    }
+}
