@@ -1,0 +1,97 @@
+package exercicio06;
+
+import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class UtilitarioTest {
+    @Test
+    void testVetorZerado(){
+        var utilitario = new Utilitario();
+        var estudantes = new ArrayList<Estudante>();
+
+        var e = assertThrows(Exception.class, () ->{
+            var resultado = utilitario.definirConceito(estudantes); //ENTENDER ISSO
+        });
+        assertEquals("lista vazia de estudante", e.getMessage());
+    }
+
+    @Test
+    void testVetorNulo(){
+        var utilitario = new Utilitario();
+
+        var e = assertThrows(Exception.class, () ->{
+            var resultado = utilitario.definirConceito(null); //ENTENDER ISSO
+        });
+    }
+
+    @Test
+    void testEscoreInvalidoNegativo(){
+        var utilitario = new Utilitario();
+        var estudantes = new ArrayList<Estudante>();
+        estudantes.add(new Estudante("Adriano", -1));
+
+        var e = assertThrows(Exception.class, () ->{
+            var resultado = utilitario.definirConceito(estudantes);
+        });
+        assertEquals("estudante com escore invalido", e.getMessage());
+    }
+
+    @Test
+    void testEscoreMaiorDoQueOLimite(){
+        var utilitario = new Utilitario();
+        var estudantes = new ArrayList<Estudante>();
+        estudantes.add(new Estudante("Adriano", 101));
+
+        var e = assertThrows(Exception.class, () ->{
+            var resultado = utilitario.definirConceito(estudantes);
+        });
+        assertEquals("estudante com escore invalido", e.getMessage());
+    }
+
+    @Test
+    void testConceitoA() throws Exception{
+        var utilitario = new Utilitario();
+        var estudantes = new ArrayList<Estudante>();
+        estudantes.add(new Estudante("Adriano", 90));
+
+        var estudante = utilitario.definirConceito(estudantes);
+
+        assertEquals("A", estudante.get(0).getConceito());
+    }
+
+    @Test
+    void testConceitoB() throws Exception{
+        var utilitario = new Utilitario();
+        var estudantes = new ArrayList<Estudante>();
+        estudantes.add(new Estudante("Adriano", 70));
+
+        var estudante = utilitario.definirConceito(estudantes);
+
+        assertEquals("B", estudante.get(0).getConceito());
+    }
+
+    @Test
+    void testConceitoC() throws Exception{
+        var utilitario = new Utilitario();
+        var estudantes = new ArrayList<Estudante>();
+        estudantes.add(new Estudante("Adriano", 50));
+
+        var estudante = utilitario.definirConceito(estudantes);
+
+        assertEquals("C", estudante.get(0).getConceito());
+    }
+
+    @Test
+    void testConceitoF() throws Exception{
+        var utilitario = new Utilitario();
+        var estudantes = new ArrayList<Estudante>();
+        estudantes.add(new Estudante("Adriano", 40));
+
+        var estudante = utilitario.definirConceito(estudantes);
+
+        assertEquals("F", estudante.get(0).getConceito());
+    }
+}
